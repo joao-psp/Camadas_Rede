@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+        <style>
+            * {
+                box-sizing: border-box;
+            }
+            html, body {
+                width: 100%;
+                height: 100%;
+                background-color: #efefef;
+                padding: 0;
+                margin: 0;
+                border: 0;
+            }
+            header {
+                height: 50px;
+                padding: 10px 5px;
+                background-color: #eeeeee;
+            }
+            header input {
+                height: 30px;
+                width: 100%;
+            }
+        </style>
+
+        <title>Sanbrowser</title>
+    </head>
+    <body>
+        <header>
+            <input type="text" id="url">
+        </header>
+        <article id="content">
+        </article>
+        <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+
+            <script src="node_modules/jquery/dist/jquery.min.js"></script>
+            <script>
+                const net = require('net');
+            </script>
+            <script>
+              erro = '<html><body><h1 style="text-align:center;">Servidor não encontrado! </br> \
+              Jacarézinho da Google aqui :(</h1></body></html>'
+                $("#url").keypress(function(event) {
+                    if (event.keyCode === 13) {
+                        event.preventDefault();
+
+                        var server = $("#url").val().split('/')[0];
+                        var file = $("#url").val().split('/')[1];
+                        const client = net.createConnection({ port: 20001, host: "localhost" }, () => {
+                            client.on('data', (data) => {
+                              if(data.toString()==''){
+                                  $("#content").html(erro.toString());
+                              }
+                                $("#content").html(data.toString().split('text/html')[1]);
+                                client.end();
+                            });
+                        });
+
+                        client.write('\
+GET /' + file + ' HTTP/1.1\
+User-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)\
+Host: ' + server + ' \
+Accept-Language: pt-br\
+Accept-Encoding: gzip, deflate\
+Connection: Keep-Alive');
+                    }
+                });
+            </script>
+
+        <script>if (window.module) module = window.module;</script>
+    </body>
+</html>
